@@ -23,6 +23,7 @@
   export let items = [];
 
   let index = null;
+  let results = items;
 
   $: is_enabled = value && show && items.length;
 
@@ -30,21 +31,18 @@
 
   const handle_on_input = () => {
     dispatch("change", { value });
-    calculate_height();
+    calculate_coordinates();
   };
 
   const handle_on_change = () => {
     dispatch("change", { value });
-    calculate_height();
+    calculate_coordinates();
   };
 
   const get_word_at_cursor = (textarea) => {
     const value = textarea.value;
     const index = textarea.selectionStart;
-    const segments = String(value)
-      .substring(0, index)
-      .split(" ")
-      .map((v) => v.trim());
+    const segments = String(value).substring(0, index).split(" ");
 
     const word = segments[segments.length - 1];
 
@@ -77,7 +75,7 @@
     if (is_enabled) {
       evt.preventDefault();
 
-      value = `${value.trim()} `;
+      value = `${value} `;
 
       dispatch("change", { value });
 
@@ -103,6 +101,8 @@
     show = false;
 
     if (resetIndex) index = null;
+
+    results = items;
 
     textarea.focus();
   };
@@ -195,14 +195,30 @@
     }
   };
 
+  const filter_search_results = () => {
+    const search = String(get_word_at_cursor(textarea)).trim().toLowerCase();
+
+    if (search.startsWith("@")) {
+      results = items.filter((v) =>
+        String(v[item_key]).toLowerCase().startsWith(search.replace("@", ""))
+      );
+      return;
+    }
+
+    results = items;
+  };
+
   const handle_on_keyup = (evt) => {
     read_word_at_cursor(textarea);
-    calculate_height();
+
+    filter_search_results();
+
+    calculate_coordinates();
   };
 
   const handle_on_keydown = (evt) => {
     read_word_at_cursor(textarea);
-    calculate_height();
+    calculate_coordinates();
   };
 
   const create_popper_instance = async (show) => {
@@ -231,8 +247,7 @@
     }
   };
 
-  const calculate_height = () => {
-    height = code.offsetHeight;
+  const calculate_coordinates = () => {
     caret_coordinates = get_caret_coordinates(textarea);
   };
 
@@ -242,15 +257,18 @@
 
   onMount(async () => {
     setTimeout(() => {
-      calculate_height();
+      calculate_coordinates();
     }, timeout);
   });
 </script>
 
-<svelte:window on:keydown={handle_window_keydown} />
+<svelte:window
+  on:keydown={handle_window_keydown}
+  on:resize={calculate_coordinates}
+/>
 
 <div class="mention" class:show bind:this={mention}>
-  {#each items as item, i}
+  {#each results as item, i}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
     <div
@@ -264,6 +282,8 @@
         {item[item_key]}
       </div>
     </div>
+  {:else}
+    <div class="mention-empty">no results</div>
   {/each}
 </div>
 
@@ -272,10 +292,7 @@
   style="left: {caret_coordinates.left}px; top: {caret_coordinates.top}px;"
 />
 
-<div
-  class="mention-wrapper"
-  style="height: {height}px; --min-height: {height}px"
->
+<div class="mention-wrapper" style="--height: {height}px;">
   <textarea
     {placeholder}
     bind:value
@@ -283,7 +300,7 @@
     on:keydown={handle_on_keydown}
     on:input={handle_on_input}
     on:change={handle_on_change}
-    style="min-height: {height}px;"
+    on:paste={handle_on_change}
     bind:this={textarea}
   />
   <code bind:this={code}>
@@ -307,6 +324,7 @@
 
   .mention {
     width: 200px;
+    min-height: 100px;
     max-height: 200px;
     overflow-y: auto;
     position: absolute;
@@ -322,6 +340,15 @@
     border-bottom: solid 1px var(--mention-border-color);
     background-color: var(--mention-background);
     box-shadow: var(--mention-shadow);
+  }
+
+  .mention-empty {
+    width: 200px;
+    height: 100px;
+    max-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .mention.show {
@@ -355,21 +382,19 @@
 
   code {
     width: 100%;
-    min-height: var(--min-height);
+    min-height: var(--height);
     display: block;
+    box-sizing: border-box;
+    color: transparent;
     white-space: pre-wrap;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 0;
-    z-index: 1;
+    word-wrap: break-word;
     pointer-events: none;
+    z-index: 1;
   }
 
   textarea {
     width: 100%;
     height: 100%;
-    min-height: var(--min-height);
     border: none;
     padding: 0;
     margin: 0;
@@ -381,6 +406,7 @@
     right: 0;
     bottom: 0;
     top: 0;
+    position: absolute;
     z-index: 3;
   }
 

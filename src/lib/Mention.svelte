@@ -5,11 +5,14 @@
   import { get_caret_coordinates } from "./caret";
 
   export let placeholder = "Your comments here...";
+  export let trigger = "@";
+  export let textareaClass = "";
+  export let wrapperClass = "";
+  export let disabled = false;
+  export let value = "";
 
-  let value = "";
   let caret_coordinates = {};
   let height = 200;
-  let code;
   let textarea;
   let show = false;
   let popper;
@@ -52,7 +55,7 @@
   const read_word_at_cursor = (textarea) => {
     const word = get_word_at_cursor(textarea);
 
-    show = word && word.length > 2 && word.startsWith("@");
+    show = word && word.length > 2 && word.startsWith(trigger);
 
     return word;
   };
@@ -170,9 +173,7 @@
 
       index = index - 1;
 
-      mention.scroll({
-        top: index > 6 ? mention.offsetHeight - (index + 1) * ITEM_HEIGHT : 0,
-      });
+      mention.scrollTop = index < 5 ? 0 : (index + 1) * (height + 1);
     }
   };
 
@@ -198,9 +199,11 @@
   const filter_search_results = () => {
     const search = String(get_word_at_cursor(textarea)).trim().toLowerCase();
 
-    if (search.startsWith("@")) {
+    if (search.startsWith(trigger)) {
       results = items.filter((v) =>
-        String(v[item_key]).toLowerCase().startsWith(search.replace("@", ""))
+        String(v[item_key])
+          .toLowerCase()
+          .startsWith(search.replace(trigger, ""))
       );
       return;
     }
@@ -292,9 +295,11 @@
   style="left: {caret_coordinates.left}px; top: {caret_coordinates.top}px;"
 />
 
-<div class="mention-wrapper" style="--height: {height}px;">
+<div class={`mention-wrapper ${wrapperClass}`} style="--height: {height}px;">
   <textarea
     {placeholder}
+    {disabled}
+    class={textareaClass}
     bind:value
     on:keyup={handle_on_keyup}
     on:keydown={handle_on_keydown}
@@ -303,7 +308,7 @@
     on:paste={handle_on_change}
     bind:this={textarea}
   />
-  <code bind:this={code}>
+  <code>
     {value}
   </code>
 </div>
@@ -313,6 +318,10 @@
     --mention-border-color: #ddd;
     --mention-background: #fff;
     --mention-shadow: -5px 7px 5px -8px rgba(0, 0, 0, 0.75);
+    --mention-background-hover: aliceblue;
+    --mention-padding: 8px;
+    --mention-border-radius: 8px;
+    --mention-z-index: 2000;
   }
 
   .mention-wrapper {
@@ -320,6 +329,7 @@
     position: relative;
     overflow: hidden;
     font-family: inherit;
+    border-radius: var(--mention-border-radius);
   }
 
   .mention {
@@ -330,16 +340,16 @@
     position: absolute;
     left: 0;
     top: 0;
-    z-index: 2000;
     display: none;
     opacity: 0;
     transition: opacity 300ms ease-in;
     transition: translate 100ms ease-in;
-
     flex-direction: column;
-    border-bottom: solid 1px var(--mention-border-color);
+    z-index: var(--mention-z-index);
+    border: solid 1px var(--mention-border-color);
     background-color: var(--mention-background);
     box-shadow: var(--mention-shadow);
+    border-radius: var(--mention-border-radius);
   }
 
   .mention-empty {
@@ -365,7 +375,7 @@
   }
 
   .mention-item.active {
-    background-color: aliceblue;
+    background-color: var(--mention-background-hover);
   }
 
   .mention-item:last-child {
@@ -408,6 +418,7 @@
     top: 0;
     position: absolute;
     z-index: 3;
+    padding: var(--mention-padding);
   }
 
   textarea:focus {

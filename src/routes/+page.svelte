@@ -15,6 +15,17 @@
     { label: "User User 11" },
     { label: "User User 12" },
   ];
+
+  let value = "How are you today?";
+
+  const handle_change = (evt) => console.log(evt.detail);
+
+  const handle_mention = (evt) => console.log(evt.detail);
 </script>
 
-<Mention {items} />
+<Mention
+  {items}
+  on:change={handle_change}
+  on:mention={handle_mention}
+  bind:value
+/>

@@ -4,7 +4,6 @@ A mention library for SvelteJS. This enables you to have a facebook-like user me
 
 ![My Image](https://raw.github.com/johndavedecano/svelte-mention/main/screenshot.png)
 
-
 ## Installation
 
 ```
@@ -15,27 +14,39 @@ npm i svelte-mention
 
 ```
 <script>
- import { Mention } from 'svelte-mention'
- 
+  import { Mention } from 'svelte-mention'
+
   let items = [
-    {
-      label: 'Option 1'
-    },
-    {
-      label: 'Option 2'
-    },
-    {
-      label: 'Option 3'
-    }
-  ]
-  
-  const on_change = evt => console.log(evt.detail.value)
+    { label: "User User 1" },
+    { label: "User User 2" },
+    { label: "User User 3" },
+    { label: "User User 4" },
+    { label: "User User 5" },
+    { label: "User User 6" },
+    { label: "User User 7" },
+    { label: "User User 8" },
+    { label: "User User 9" },
+    { label: "User User 10" },
+    { label: "User User 11" },
+    { label: "User User 12" },
+  ];
+
+  let value = "How are you today?";
+
+  const handle_change = (evt) => console.log(evt.detail);
+
+  const handle_mention = (evt) => console.log(evt.detail);
 </script>
 
-<Mention {items} on:change={on_change} />
+<Mention
+  {items}
+  on:change={handle_change}
+  on:mention={handle_mention}
+  bind:value
+/>
 ```
 
 ## Milestones
-- searchable items
+
 - make more customizable
 - allow custom component

@@ -24,6 +24,8 @@
 
   let index = null;
 
+  $: is_enabled = value && show && items.length;
+
   const dispatch = createEventDispatcher();
 
   const handle_on_input = () => {
@@ -58,7 +60,7 @@
   };
 
   const handle_escape = (evt) => {
-    if (value && show && items.length) {
+    if (is_enabled) {
       evt.preventDefault();
 
       value = `${value} `;
@@ -72,7 +74,7 @@
   };
 
   const handle_enter = (evt) => {
-    if (value && show && items.length) {
+    if (is_enabled) {
       evt.preventDefault();
 
       value = `${value.trim()} `;
@@ -129,11 +131,11 @@
   };
 
   const handle_item_click = (item) => {
-    if (value && show && items.length) handle_select_item(item);
+    if (is_enabled) handle_select_item(item);
   };
 
   const handle_down = (evt) => {
-    if (value && show && items.length) {
+    if (is_enabled) {
       evt.preventDefault();
 
       if (index === null || index === items.length - 1) {
@@ -155,7 +157,7 @@
   };
 
   const handle_up = (evt) => {
-    if (value && show && items.length) {
+    if (is_enabled) {
       evt.preventDefault();
 
       if (index === 0 || index === null) {

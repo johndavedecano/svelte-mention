@@ -10,6 +10,7 @@
   export let wrapperClass = "";
   export let disabled = false;
   export let value = "";
+  export let autofocus = false;
 
   let caret_coordinates = {};
   let height = 200;
@@ -296,9 +297,11 @@
 />
 
 <div class={`mention-wrapper ${wrapperClass}`} style="--height: {height}px;">
+  <!-- svelte-ignore a11y-autofocus -->
   <textarea
     {placeholder}
     {disabled}
+    {autofocus}
     class={textareaClass}
     bind:value
     on:keyup={handle_on_keyup}

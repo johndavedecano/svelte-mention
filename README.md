@@ -46,6 +46,18 @@ npm i svelte-mention
 />
 ```
 
+## Customization through CSS Variables
+
+```
+--mention-border-color: #ddd;
+--mention-background: #fff;
+--mention-shadow: -5px 7px 5px -8px rgba(0, 0, 0, 0.75);
+--mention-background-hover: aliceblue;
+--mention-padding: 8px;
+--mention-border-radius: 8px;
+--mention-z-index: 2000;
+```
+
 ## Milestones
 
 - make more customizable

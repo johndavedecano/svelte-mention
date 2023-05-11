@@ -11,6 +11,8 @@
   export let disabled = false;
   export let value = "";
   export let autofocus = false;
+  export let show_empty = false;
+  export let empty_text = "no results";
 
   let caret_coordinates = {};
   let height = 200;
@@ -287,7 +289,11 @@
       </div>
     </div>
   {:else}
-    <div class="mention-empty">no results</div>
+    {#if show_empty}
+      <div class="mention-empty">
+        {empty_text}
+      </div>
+    {/if}
   {/each}
 </div>
 

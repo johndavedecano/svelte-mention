@@ -34,3 +34,8 @@ npm i svelte-mention
 
 <Mention {items} on:change={on_change} />
 ```
+
+## Milestones
+- searchable items
+- make more customizable
+- allow custom component

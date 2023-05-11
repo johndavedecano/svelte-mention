@@ -12,9 +12,11 @@ npm i svelte-mention
 
 ```
 
+## Usage
+
 ```
 <script>
-  import { Mention } from 'svelte-mention'
+  import Mention from 'svelte-mention'
 
   let items = [
     { label: "User User 1" },
